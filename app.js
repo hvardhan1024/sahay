@@ -75,6 +75,11 @@ app.use('/helper', helperRoutes);
 app.use('/chat', chatRoutes);
 app.use('/ai', aiRoutes);
 
+// Video route
+app.get('/video', (req, res) => {
+  res.redirect('https://www.google.com');
+});
+
 // Home route
 app.get('/', (req, res) => {
   if (req.session.user) return res.redirect('/dashboard');
