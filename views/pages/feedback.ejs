@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <style>
+    .form-section {
+      animation: fadeInUp 0.6s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .rating-input:checked + label {
+      color: #f59e0b;
+      transform: scale(1.1);
+    }
+    .rating-input:checked ~ label {
+      color: #d1d5db;
+    }
+    .progress-bar {
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
+  <%- include('../partials/navbar') %>
+  
+  <div class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <div class="text-center mb-12 form-section">
+        <h1 class="text-4xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent mb-4">
+          Share Your Experience 💙
+        </h1>
+        <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+          Your feedback helps us create a better mental wellness experience for everyone. Every voice matters in building a supportive community.
+        </p>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="mb-8">
+        <div class="bg-gray-200 rounded-full h-2">
+          <div id="progress-bar" class="progress-bar bg-gradient-to-r from-green-500 to-blue-500 h-2 rounded-full" style="width: 0%"></div>
+        </div>
+        <p class="text-sm text-gray-600 mt-2 text-center">Progress: <span id="progress-text">0%</span></p>
+      </div>
+
+      <!-- Success/Error Messages -->
+      <% if (success) { %>
+        <div class="mb-8 bg-green-50 border border-green-200 rounded-xl p-6">
+          <div class="flex items-center space-x-3">
+            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <p class="text-green-800 font-medium"><%= success %></p>
+          </div>
+        </div>
+      <% } %>
+
+      <% if (error) { %>
+        <div class="mb-8 bg-red-50 border border-red-200 rounded-xl p-6">
+          <div class="flex items-center space-x-3">
+            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <p class="text-red-800 font-medium"><%= error %></p>
+          </div>
+        </div>
+      <% } %>
+
+      <!-- Feedback Form -->
+      <form id="feedback-form" action="/feedback/submit" method="POST" class="space-y-8">
+        
+        <!-- Section 1: Personal Information -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 form-section">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold text-sm mr-3">1</span>
+            Personal Information
+          </h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Full Name *</label>
+              <input type="text" name="name" required maxlength="100" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                placeholder="Enter your full name">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+              <input type="email" name="email" required 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                placeholder="your.email@example.com">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+              <input type="tel" name="phoneNumber" required 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200"
+                placeholder="+1 (555) 123-4567">
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">I am a *</label>
+              <select name="userType" required 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                <option value="">Select your role</option>
+                <option value="student">Student</option>
+                <option value="parent">Parent</option>
+                <option value="teacher">Teacher</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Age Range *</label>
+              <select name="ageRange" required 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                <option value="">Select age range</option>
+                <option value="13-17">13-17 years</option>
+                <option value="18-24">18-24 years</option>
+                <option value="25-34">25-34 years</option>
+                <option value="35-44">35-44 years</option>
+                <option value="45-54">45-54 years</option>
+                <option value="55+">55+ years</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Education Level</label>
+              <select name="educationLevel" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200">
+                <option value="">Select education level</option>
+                <option value="high-school">High School</option>
+                <option value="undergraduate">Undergraduate</option>
+                <option value="postgraduate">Postgraduate</option>
+                <option value="professional">Professional</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: App Usage Experience -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 form-section">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-bold text-sm mr-3">2</span>
+            App Usage Experience
+          </h2>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">How long have you been using Sahay? *</label>
+              <select name="appUsageDuration" required 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                <option value="">Select duration</option>
+                <option value="first-time">First time using</option>
+                <option value="less-than-week">Less than a week</option>
+                <option value="1-4-weeks">1-4 weeks</option>
+                <option value="1-3-months">1-3 months</option>
+                <option value="3-6-months">3-6 months</option>
+                <option value="6-months-plus">6+ months</option>
+              </select>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3">Which features have you used? (Select all that apply) *</label>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <input type="checkbox" name="primaryFeatureUsed" value="peer-chat" class="text-blue-500 focus:ring-blue-500">
+                  <span class="text-sm">Peer Chat</span>
+                </label>
+                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <input type="checkbox" name="primaryFeatureUsed" value="ai-educator" class="text-blue-500 focus:ring-blue-500">
+                  <span class="text-sm">AI Educator</span>
+                </label>
+                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <input type="checkbox" name="primaryFeatureUsed" value="resources" class="text-blue-500 focus:ring-blue-500">
+                  <span class="text-sm">Resources</span>
+                </label>
+                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <input type="checkbox" name="primaryFeatureUsed" value="dashboard" class="text-blue-500 focus:ring-blue-500">
+                  <span class="text-sm">Dashboard</span>
+                </label>
+                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <input type="checkbox" name="primaryFeatureUsed" value="mood-tracking" class="text-blue-500 focus:ring-blue-500">
+                  <span class="text-sm">Mood Tracking</span>
+                </label>
+                <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                  <input type="checkbox" name="primaryFeatureUsed" value="profile" class="text-blue-500 focus:ring-blue-500">
+                  <span class="text-sm">Profile</span>
+                </label>
+              </div>
+            </div>
+            
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">What device are you primarily using? *</label>
+              <select name="deviceType" required 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200">
+                <option value="">Select device type</option>
+                <option value="mobile-android">Mobile - Android</option>
+                <option value="mobile-ios">Mobile - iOS</option>
+                <option value="desktop-windows">Desktop - Windows</option>
+                <option value="desktop-mac">Desktop - Mac</option>
+                <option value="tablet">Tablet</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 3: Experience Ratings -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 form-section">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center text-purple-600 font-bold text-sm mr-3">3</span>
+            Rate Your Experience
+          </h2>
+          
+          <div class="space-y-8">
+            <!-- Overall Experience Rating -->
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3">Overall Experience *</label>
+              <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">Poor</span>
+                <div class="flex space-x-1">
+                  <input type="radio" name="overallExperience" value="1" id="overall-1" class="rating-input hidden" required>
+                  <label for="overall-1" class="cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="overallExperience" value="2" id="overall-2" class="rating-input hidden">
+                  <label for="overall-2" class="cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="overallExperience" value="3" id="overall-3" class="rating-input hidden">
+                  <label for="overall-3" class="cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="overallExperience" value="4" id="overall-4" class="rating-input hidden">
+                  <label for="overall-4" class="cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="overallExperience" value="5" id="overall-5" class="rating-input hidden">
+                  <label for="overall-5" class="cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                </div>
+                <span class="text-sm text-gray-500">Excellent</span>
+              </div>
+            </div>
+
+            <!-- Other ratings in grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-3">Ease of Use *</label>
+                <div class="flex space-x-1">
+                  <input type="radio" name="easeOfUse" value="1" id="ease-1" class="rating-input hidden" required>
+                  <label for="ease-1" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="easeOfUse" value="2" id="ease-2" class="rating-input hidden">
+                  <label for="ease-2" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="easeOfUse" value="3" id="ease-3" class="rating-input hidden">
+                  <label for="ease-3" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="easeOfUse" value="4" id="ease-4" class="rating-input hidden">
+                  <label for="ease-4" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="easeOfUse" value="5" id="ease-5" class="rating-input hidden">
+                  <label for="ease-5" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-3">Helpfulness *</label>
+                <div class="flex space-x-1">
+                  <input type="radio" name="helpfulnessRating" value="1" id="helpful-1" class="rating-input hidden" required>
+                  <label for="helpful-1" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="helpfulnessRating" value="2" id="helpful-2" class="rating-input hidden">
+                  <label for="helpful-2" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="helpfulnessRating" value="3" id="helpful-3" class="rating-input hidden">
+                  <label for="helpful-3" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="helpfulnessRating" value="4" id="helpful-4" class="rating-input hidden">
+                  <label for="helpful-4" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="helpfulnessRating" value="5" id="helpful-5" class="rating-input hidden">
+                  <label for="helpful-5" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-3">Design & UI *</label>
+                <div class="flex space-x-1">
+                  <input type="radio" name="designRating" value="1" id="design-1" class="rating-input hidden" required>
+                  <label for="design-1" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="designRating" value="2" id="design-2" class="rating-input hidden">
+                  <label for="design-2" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="designRating" value="3" id="design-3" class="rating-input hidden">
+                  <label for="design-3" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="designRating" value="4" id="design-4" class="rating-input hidden">
+                  <label for="design-4" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  <input type="radio" name="designRating" value="5" id="design-5" class="rating-input hidden">
+                  <label for="design-5" class="cursor-pointer text-xl text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Feature-Specific Feedback -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 form-section">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-orange-600 font-bold text-sm mr-3">4</span>
+            Feature-Specific Feedback
+          </h2>
+          
+          <div class="space-y-8">
+            <!-- Peer Chat Experience -->
+            <div class="border border-gray-200 rounded-lg p-6">
+              <h3 class="font-semibold text-lg text-gray-800 mb-4 flex items-center">
+                <svg class="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                </svg>
+                Peer Chat Experience
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Rate your peer chat experience</label>
+                  <div class="flex space-x-1">
+                    <input type="radio" name="peerChatRating" value="1" id="peer-1" class="rating-input hidden">
+                    <label for="peer-1" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="peerChatRating" value="2" id="peer-2" class="rating-input hidden">
+                    <label for="peer-2" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="peerChatRating" value="3" id="peer-3" class="rating-input hidden">
+                    <label for="peer-3" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="peerChatRating" value="4" id="peer-4" class="rating-input hidden">
+                    <label for="peer-4" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="peerChatRating" value="5" id="peer-5" class="rating-input hidden">
+                    <label for="peer-5" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  </div>
+                </div>
+                <textarea name="peerChatComments" maxlength="500" rows="3" 
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent resize-none"
+                  placeholder="Share your thoughts about the peer chat feature..."></textarea>
+              </div>
+            </div>
+
+            <!-- AI Educator Experience -->
+            <div class="border border-gray-200 rounded-lg p-6">
+              <h3 class="font-semibold text-lg text-gray-800 mb-4 flex items-center">
+                <svg class="w-5 h-5 text-blue-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                </svg>
+                AI Educator Experience
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Rate your AI educator experience</label>
+                  <div class="flex space-x-1">
+                    <input type="radio" name="aiEducatorRating" value="1" id="ai-1" class="rating-input hidden">
+                    <label for="ai-1" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="aiEducatorRating" value="2" id="ai-2" class="rating-input hidden">
+                    <label for="ai-2" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="aiEducatorRating" value="3" id="ai-3" class="rating-input hidden">
+                    <label for="ai-3" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="aiEducatorRating" value="4" id="ai-4" class="rating-input hidden">
+                    <label for="ai-4" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="aiEducatorRating" value="5" id="ai-5" class="rating-input hidden">
+                    <label for="ai-5" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  </div>
+                </div>
+                <textarea name="aiEducatorComments" maxlength="500" rows="3" 
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                  placeholder="How helpful was the AI educator in addressing your mental wellness questions?"></textarea>
+              </div>
+            </div>
+
+            <!-- Resources Experience -->
+            <div class="border border-gray-200 rounded-lg p-6">
+              <h3 class="font-semibold text-lg text-gray-800 mb-4 flex items-center">
+                <svg class="w-5 h-5 text-purple-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14-7H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2z"></path>
+                </svg>
+                Resources Experience
+              </h3>
+              <div class="space-y-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">Rate the resources section</label>
+                  <div class="flex space-x-1">
+                    <input type="radio" name="resourcesRating" value="1" id="resource-1" class="rating-input hidden">
+                    <label for="resource-1" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="resourcesRating" value="2" id="resource-2" class="rating-input hidden">
+                    <label for="resource-2" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="resourcesRating" value="3" id="resource-3" class="rating-input hidden">
+                    <label for="resource-3" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="resourcesRating" value="4" id="resource-4" class="rating-input hidden">
+                    <label for="resource-4" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                    <input type="radio" name="resourcesRating" value="5" id="resource-5" class="rating-input hidden">
+                    <label for="resource-5" class="cursor-pointer text-lg text-gray-300 hover:text-yellow-400 transition-colors">⭐</label>
+                  </div>
+                </div>
+                <textarea name="resourcesComments" maxlength="500" rows="3" 
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                  placeholder="How useful were the articles, videos, and wellness resources?"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 5: Mental Health Impact -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 form-section">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-pink-100 rounded-full flex items-center justify-center text-pink-600 font-bold text-sm mr-3">5</span>
+            Mental Health Impact
+          </h2>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3">Has using Sahay helped reduce your stress levels?</label>
+              <select name="stressReductionLevel" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200">
+                <option value="">Select an option</option>
+                <option value="significant-improvement">Yes, significant improvement</option>
+                <option value="moderate-improvement">Yes, moderate improvement</option>
+                <option value="slight-improvement">Yes, slight improvement</option>
+                <option value="no-change">No change</option>
+                <option value="made-worse">Made things worse</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3">How likely are you to recommend Sahay to a friend? * (0-10 scale)</label>
+              <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">Not likely</span>
+                <div class="flex space-x-2">
+                  <input type="radio" name="recommendationLikelihood" value="0" id="rec-0" class="text-pink-500" required>
+                  <label for="rec-0" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">0</label>
+                  <input type="radio" name="recommendationLikelihood" value="1" id="rec-1" class="text-pink-500">
+                  <label for="rec-1" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">1</label>
+                  <input type="radio" name="recommendationLikelihood" value="2" id="rec-2" class="text-pink-500">
+                  <label for="rec-2" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">2</label>
+                  <input type="radio" name="recommendationLikelihood" value="3" id="rec-3" class="text-pink-500">
+                  <label for="rec-3" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">3</label>
+                  <input type="radio" name="recommendationLikelihood" value="4" id="rec-4" class="text-pink-500">
+                  <label for="rec-4" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">4</label>
+                  <input type="radio" name="recommendationLikelihood" value="5" id="rec-5" class="text-pink-500">
+                  <label for="rec-5" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">5</label>
+                  <input type="radio" name="recommendationLikelihood" value="6" id="rec-6" class="text-pink-500">
+                  <label for="rec-6" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">6</label>
+                  <input type="radio" name="recommendationLikelihood" value="7" id="rec-7" class="text-pink-500">
+                  <label for="rec-7" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">7</label>
+                  <input type="radio" name="recommendationLikelihood" value="8" id="rec-8" class="text-pink-500">
+                  <label for="rec-8" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">8</label>
+                  <input type="radio" name="recommendationLikelihood" value="9" id="rec-9" class="text-pink-500">
+                  <label for="rec-9" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">9</label>
+                  <input type="radio" name="recommendationLikelihood" value="10" id="rec-10" class="text-pink-500">
+                  <label for="rec-10" class="cursor-pointer text-sm font-medium text-gray-700 hover:text-pink-600">10</label>
+                </div>
+                <span class="text-sm text-gray-500">Very likely</span>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3">How would you rate the emotional support you received?</label>
+              <select name="emotionalSupportReceived" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-transparent transition-all duration-200">
+                <option value="">Select rating</option>
+                <option value="excellent">Excellent</option>
+                <option value="good">Good</option>
+                <option value="average">Average</option>
+                <option value="poor">Poor</option>
+                <option value="very-poor">Very Poor</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3">Would you continue using Sahay? *</label>
+              <div class="flex space-x-6">
+                <label class="flex items-center space-x-2">
+                  <input type="radio" name="wouldUseAgain" value="true" class="text-pink-500 focus:ring-pink-500" required>
+                  <span class="text-gray-700">Yes, definitely</span>
+                </label>
+                <label class="flex items-center space-x-2">
+                  <input type="radio" name="wouldUseAgain" value="false" class="text-pink-500 focus:ring-pink-500">
+                  <span class="text-gray-700">No, probably not</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 6: Privacy & Safety -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 form-section">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-bold text-sm mr-3">6</span>
+            Privacy & Safety
+          </h2>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3">How comfortable do you feel about your privacy on Sahay? *</label>
+              <select name="privacyComfortLevel" required 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200">
+                <option value="">Select comfort level</option>
+                <option value="very-comfortable">Very comfortable</option>
+                <option value="comfortable">Comfortable</option>
+                <option value="neutral">Neutral</option>
+                <option value="uncomfortable">Uncomfortable</option>
+                <option value="very-uncomfortable">Very uncomfortable</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-3">Rate how safe you feel using Sahay *</label>
+              <div class="flex items-center space-x-2">
+                <span class="text-sm text-gray-500">Not safe</span>
+                <div class="flex space-x-1">
+                  <input type="radio" name="safetyRating" value="1" id="safety-1" class="rating-input hidden" required>
+                  <label for="safety-1" class="cursor-pointer text-xl text-gray-300 hover:text-green-400 transition-colors">🛡️</label>
+                  <input type="radio" name="safetyRating" value="2" id="safety-2" class="rating-input hidden">
+                  <label for="safety-2" class="cursor-pointer text-xl text-gray-300 hover:text-green-400 transition-colors">🛡️</label>
+                  <input type="radio" name="safetyRating" value="3" id="safety-3" class="rating-input hidden">
+                  <label for="safety-3" class="cursor-pointer text-xl text-gray-300 hover:text-green-400 transition-colors">🛡️</label>
+                  <input type="radio" name="safetyRating" value="4" id="safety-4" class="rating-input hidden">
+                  <label for="safety-4" class="cursor-pointer text-xl text-gray-300 hover:text-green-400 transition-colors">🛡️</label>
+                  <input type="radio" name="safetyRating" value="5" id="safety-5" class="rating-input hidden">
+                  <label for="safety-5" class="cursor-pointer text-xl text-gray-300 hover:text-green-400 transition-colors">🛡️</label>
+                </div>
+                <span class="text-sm text-gray-500">Very safe</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 7: Technical Issues -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 form-section">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center text-red-600 font-bold text-sm mr-3">7</span>
+            Technical Experience
+          </h2>
+          
+          <div>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">Have you encountered any technical issues? (Select all that apply)</label>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input type="checkbox" name="technicalIssuesEncountered" value="slow-loading" class="text-red-500 focus:ring-red-500">
+                <span class="text-sm">Slow loading</span>
+              </label>
+              <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input type="checkbox" name="technicalIssuesEncountered" value="crashes" class="text-red-500 focus:ring-red-500">
+                <span class="text-sm">App crashes</span>
+              </label>
+              <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input type="checkbox" name="technicalIssuesEncountered" value="login-issues" class="text-red-500 focus:ring-red-500">
+                <span class="text-sm">Login issues</span>
+              </label>
+              <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input type="checkbox" name="technicalIssuesEncountered" value="chat-problems" class="text-red-500 focus:ring-red-500">
+                <span class="text-sm">Chat problems</span>
+              </label>
+              <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input type="checkbox" name="technicalIssuesEncountered" value="ai-not-responding" class="text-red-500 focus:ring-red-500">
+                <span class="text-sm">AI not responding</span>
+              </label>
+              <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input type="checkbox" name="technicalIssuesEncountered" value="resource-loading" class="text-red-500 focus:ring-red-500">
+                <span class="text-sm">Resource loading</span>
+              </label>
+              <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input type="checkbox" name="technicalIssuesEncountered" value="other" class="text-red-500 focus:ring-red-500">
+                <span class="text-sm">Other issues</span>
+              </label>
+              <label class="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+                <input type="checkbox" name="technicalIssuesEncountered" value="none" class="text-green-500 focus:ring-green-500">
+                <span class="text-sm">No issues</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 8: Open-Ended Feedback -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 form-section">
+          <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+            <span class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center text-yellow-600 font-bold text-sm mr-3">8</span>
+            Your Detailed Feedback
+          </h2>
+          
+          <div class="space-y-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">What feature did you find most helpful?</label>
+              <textarea name="mostHelpfulFeature" maxlength="300" rows="3" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                placeholder="Tell us about the feature that made the biggest positive impact for you..."></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">What feature was least helpful or needs improvement?</label>
+              <textarea name="leastHelpfulFeature" maxlength="300" rows="3" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                placeholder="Help us understand what didn't work well for you..."></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">What suggestions do you have for improving Sahay? *</label>
+              <textarea name="suggestionForImprovement" maxlength="1000" rows="4" required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                placeholder="Your suggestions are invaluable to us. What would make Sahay better serve your mental wellness needs?"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Are there any new features you'd like to see added?</label>
+              <textarea name="additionalFeatureRequest" maxlength="500" rows="3" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                placeholder="What new features would enhance your mental wellness journey?"></textarea>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-2">Any additional comments or thoughts?</label>
+              <textarea name="generalComments" maxlength="1000" rows="4" 
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent resize-none"
+                placeholder="Share anything else you'd like us to know about your Sahay experience..."></textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Section -->
+        <div class="bg-gradient-to-br from-green-500 to-blue-600 rounded-2xl shadow-lg p-8 text-white text-center form-section">
+          <h2 class="text-2xl font-bold mb-4">Thank You for Your Time! 🙏</h2>
+          <p class="text-green-100 mb-6 max-w-2xl mx-auto">
+            Your feedback is incredibly valuable and helps us create a better mental wellness platform for students everywhere. Together, we're building a more supportive community.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <button type="submit" 
+              class="w-full sm:w-auto bg-white text-green-600 px-8 py-4 rounded-xl font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+              Submit Feedback
+            </button>
+            <button type="button" onclick="window.history.back()" 
+              class="w-full sm:w-auto bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold text-lg hover:bg-white hover:text-green-600 transition-all duration-300">
+              Go Back
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Form progress tracking
+    const form = document.getElementById('feedback-form');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const sections = document.querySelectorAll('.form-section');
+    
+    // Calculate form completion
+    function updateProgress() {
+      const requiredFields = form.querySelectorAll('[required]');
+      let completed = 0;
+      
+      requiredFields.forEach(field => {
+        if (field.type === 'radio') {
+          if (form.querySelector(`[name="${field.name}"]:checked`)) {
+            completed++;
+          }
+        } else if (field.type === 'checkbox') {
+          if (form.querySelectorAll(`[name="${field.name}"]:checked`).length > 0) {
+            completed++;
+          }
+        } else if (field.value.trim() !== '') {
+          completed++;
+        }
+      });
+      
+      const progress = Math.round((completed / requiredFields.length) * 100);
+      progressBar.style.width = progress + '%';
+      progressText.textContent = progress + '%';
+    }
+
+    // Rating system functionality
+    function setupRatingSystem() {
+      const ratingGroups = ['overallExperience', 'easeOfUse', 'helpfulnessRating', 'designRating', 
+                           'peerChatRating', 'aiEducatorRating', 'resourcesRating', 'safetyRating'];
+      
+      ratingGroups.forEach(groupName => {
+        const radios = form.querySelectorAll(`[name="${groupName}"]`);
+        radios.forEach((radio, index) => {
+          radio.addEventListener('change', () => {
+            // Update all labels in this group
+            radios.forEach((r, i) => {
+              const label = form.querySelector(`label[for="${r.id}"]`);
+              if (i <= index) {
+                label.style.color = '#f59e0b';
+                label.style.transform = 'scale(1.1)';
+              } else {
+                label.style.color = '#d1d5db';
+                label.style.transform = 'scale(1)';
+              }
+            });
+            updateProgress();
+          });
+        });
+      });
+    }
+
+    // Character counting for textareas
+    function setupCharacterCounting() {
+      const textareas = form.querySelectorAll('textarea[maxlength]');
+      textareas.forEach(textarea => {
+        const maxLength = textarea.getAttribute('maxlength');
+        const counter = document.createElement('div');
+        counter.className = 'text-xs text-gray-400 mt-1 text-right';
+        counter.textContent = `0/${maxLength}`;
+        textarea.parentNode.appendChild(counter);
+        
+        textarea.addEventListener('input', () => {
+          const current = textarea.value.length;
+          counter.textContent = `${current}/${maxLength}`;
+          counter.className = current > maxLength * 0.9 
+            ? 'text-xs text-orange-500 mt-1 text-right font-medium' 
+            : 'text-xs text-gray-400 mt-1 text-right';
+        });
+      });
+    }
+
+    // Form validation and submission
+    form.addEventListener('submit', function(e) {
+      const primaryFeatures = form.querySelectorAll('[name="primaryFeatureUsed"]:checked');
+      if (primaryFeatures.length === 0) {
+        e.preventDefault();
+        alert('Please select at least one feature you have used.');
+        return;
+      }
+      
+      // Show loading state
+      const submitButton = form.querySelector('[type="submit"]');
+      submitButton.disabled = true;
+      submitButton.textContent = 'Submitting...';
+      submitButton.className = submitButton.className.replace('hover:bg-gray-100 hover:scale-105', '');
+    });
+
+    // Real-time progress updates
+    form.addEventListener('input', updateProgress);
+    form.addEventListener('change', updateProgress);
+
+    // Handle technical issues "none" checkbox
+    const technicalIssues = form.querySelectorAll('[name="technicalIssuesEncountered"]');
+    const noneCheckbox = form.querySelector('[name="technicalIssuesEncountered"][value="none"]');
+    
+    technicalIssues.forEach(checkbox => {
+      checkbox.addEventListener('change', () => {
+        if (checkbox.value === 'none' && checkbox.checked) {
+          // Uncheck all other technical issues
+          technicalIssues.forEach(cb => {
+            if (cb.value !== 'none') cb.checked = false;
+          });
+        } else if (checkbox.checked && checkbox.value !== 'none') {
+          // Uncheck "none" if any other issue is selected
+          noneCheckbox.checked = false;
+        }
+      });
+    });
+
+    // Smooth scrolling for better UX
+    function smoothScrollToElement(element) {
+      element.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'center' 
+      });
+    }
+
+    // Initialize everything
+    document.addEventListener('DOMContentLoaded', () => {
+      setupRatingSystem();
+      setupCharacterCounting();
+      updateProgress();
+      
+      // Add animation delays for sections
+      sections.forEach((section, index) => {
+        section.style.animationDelay = `${index * 0.1}s`;
+      });
+      
+      // Focus management for accessibility
+      const firstInput = form.querySelector('input[required]');
+      if (firstInput) {
+        firstInput.focus();
+      }
+    });
+
+    // Auto-save functionality (optional - saves to localStorage)
+    let autoSaveTimeout;
+    form.addEventListener('input', () => {
+      clearTimeout(autoSaveTimeout);
+      autoSaveTimeout = setTimeout(() => {
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        localStorage.setItem('sahay-feedback-draft', JSON.stringify(data));
+      }, 2000);
+    });
+
+    // Load saved data on page load
+    window.addEventListener('load', () => {
+      const saved = localStorage.getItem('sahay-feedback-draft');
+      if (saved && !form.querySelector('[name="name"]').value) {
+        try {
+          const data = JSON.parse(saved);
+          Object.keys(data).forEach(key => {
+            const field = form.querySelector(`[name="${key}"]`);
+            if (field) {
+              if (field.type === 'radio' || field.type === 'checkbox') {
+                const option = form.querySelector(`[name="${key}"][value="${data[key]}"]`);
+                if (option) option.checked = true;
+              } else {
+                field.value = data[key];
+              }
+            }
+          });
+          updateProgress();
+        } catch (e) {
+          console.log('Could not restore saved data');
+        }
+      }
+    });
+
+    // Clear saved data on successful submission
+    form.addEventListener('submit', () => {
+      localStorage.removeItem('sahay-feedback-draft');
+    });
+  </script>
+</body>
+</html>

@@ -13,7 +13,7 @@
 
       <!-- Navigation Links -->
       <div class="hidden md:flex items-center space-x-8">
-        <% if (user) { %>
+        <% if (typeof user !== 'undefined' && user) { %>
           <a href="/dashboard" class="text-gray-600 hover:text-green-600 transition-colors font-medium">
             Dashboard
           </a>
@@ -26,7 +26,10 @@
           <a href="/resources" class="text-gray-600 hover:text-green-600 transition-colors font-medium">
             Resources
           </a>
-          <% if (user.role === 'helper') { %>
+          <a href="/feedback" class="text-gray-600 hover:text-green-600 transition-colors font-medium">
+            Feedback
+          </a>
+          <% if (typeof user !== 'undefined' && user && user.role === 'helper') { %>
             <a href="/helper/dashboard" class="text-gray-600 hover:text-green-600 transition-colors font-medium">
               Helper Hub
             </a>
@@ -36,15 +39,15 @@
 
       <!-- User Menu -->
       <div class="flex items-center space-x-4">
-        <% if (user) { %>
+        <% if (typeof user !== 'undefined' && user) { %>
           <div class="relative group">
             <button class="flex items-center space-x-2 text-gray-600 hover:text-green-600 transition-colors">
               <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                 <span class="text-green-600 font-medium text-sm">
-                  <%= user.name.charAt(0).toUpperCase() %>
+                  <%= user.name ? user.name.charAt(0).toUpperCase() : '' %>
                 </span>
               </div>
-              <span class="hidden sm:block font-medium"><%= user.name %></span>
+              <span class="hidden sm:block font-medium"><%= user.name || '' %></span>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
               </svg>
@@ -53,11 +56,11 @@
             <!-- Dropdown Menu -->
             <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
               <div class="py-2">
-                <% if (user.role === 'student') { %>
+                <% if (typeof user !== 'undefined' && user && user.role === 'student') { %>
                   <a href="/student/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
                     Profile
                   </a>
-                <% } else if (user.role === 'helper') { %>
+                <% } else if (typeof user !== 'undefined' && user && user.role === 'helper') { %>
                   <a href="/helper/profile" class="block px-4 py-2 text-sm text-gray-700 hover:bg-green-50 hover:text-green-600">
                     Profile
                   </a>
@@ -94,7 +97,7 @@
     <!-- Mobile Menu -->
     <div id="mobile-menu" class="md:hidden hidden pb-4">
       <div class="space-y-2">
-        <% if (user) { %>
+        <% if (typeof user !== 'undefined' && user) { %>
           <a href="/dashboard" class="block px-4 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
             Dashboard
           </a>
@@ -107,7 +110,7 @@
           <a href="/resources" class="block px-4 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
             Resources
           </a>
-          <% if (user.role === 'helper') { %>
+          <% if (typeof user !== 'undefined' && user && user.role === 'helper') { %>
             <a href="/helper/dashboard" class="block px-4 py-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors">
               Helper Hub
             </a>

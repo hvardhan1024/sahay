@@ -18,6 +18,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
+
 const PORT = process.env.PORT || 4000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sahay'; // Use local if env not set
 
@@ -54,6 +55,11 @@ app.use((req, res, next) => {
 });
 
 // Routes
+
+// Add this import with your other route imports at the top
+const feedbackRoutes = require('./routes/feedback');
+// Add this line with your other route definitions
+app.use('/feedback', feedbackRoutes);
 app.use('/', authRoutes);
 app.use('/student', studentRoutes);
 app.use('/helper', helperRoutes);

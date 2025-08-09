@@ -1,0 +1,30 @@
+<form action="/feedback/submit" method="POST">
+  <input type="text" name="name" required value="Test Name">
+  <input type="email" name="email" required value="test@example.com">
+  <input type="tel" name="phoneNumber" required value="+1234567890">
+  <select name="userType" required>
+    <option value="student">Student</option>
+  </select>
+  <select name="ageRange" required>
+    <option value="18-24">18-24</option>
+  </select>
+  <select name="appUsageDuration" required>
+    <option value="first-time">First time</option>
+  </select>
+  <input type="checkbox" name="primaryFeatureUsed" value="peer-chat" checked>
+  <input type="radio" name="overallExperience" value="5" checked>
+  <input type="radio" name="easeOfUse" value="5" checked>
+  <input type="radio" name="helpfulnessRating" value="5" checked>
+  <input type="radio" name="designRating" value="5" checked>
+  <input type="radio" name="recommendationLikelihood" value="8" checked>
+  <textarea name="suggestionForImprovement" required>Great app!</textarea>
+  <select name="privacyComfortLevel" required>
+    <option value="comfortable">Comfortable</option>
+  </select>
+  <input type="radio" name="safetyRating" value="5" checked>
+  <input type="radio" name="wouldUseAgain" value="true" checked>
+  <select name="deviceType" required>
+    <option value="mobile-android">Mobile - Android</option>
+  </select>
+  <button type="submit">Submit</button>
+</form>
