@@ -1,7 +1,7 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Initialize the Gemini AI with your API key
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || 'AIzaSyDZWr2xH4m--aDvkSy_WVHrSn-hE9HLCw0');
+const genAI = new GoogleGenerativeAI('AIzaSyDZWr2xH4m--aDvkSy_WVHrSn-hE9HLCw0');
 
 // System prompt for the AI to act as a stress education assistant
 const SYSTEM_PROMPT = `You are a compassionate and knowledgeable mental health educator assistant for students. Your role is to:
@@ -18,7 +18,7 @@ Always maintain a warm, supportive tone and remind users that while you can prov
 
 async function getAIResponse(userMessage) {
   try {
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const fullPrompt = `${SYSTEM_PROMPT}\n\nUser question: ${userMessage}`;
 
