@@ -77,7 +77,7 @@ app.use('/ai', aiRoutes);
 
 // Video route
 app.get('/video', (req, res) => {
-  res.redirect('https://drive.google.com/file/d/1FJFr15XezmtO_4O1IcYRIrBTuJe4vZvK/view?usp=sharing');
+  res.redirect('https://www.youtube.com/watch?v=AZpXiYKXVWA');
 });
 
 // Home route
