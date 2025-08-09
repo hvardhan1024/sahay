@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#10b981">
+  <style>
+    .typing-animation {
+      animation: typing 1.5s infinite;
+    }
+    @keyframes typing {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0.3; }
+    }
+    .message-bubble {
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+  <%- include('../partials/navbar') %>
+  
+  <div class="flex h-screen pt-16">
+    <!-- AI Chat Sidebar -->
+    <div class="w-80 bg-white shadow-sm border-r border-gray-200 flex flex-col">
+      <!-- AI Header -->
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center space-x-3">
+          <div class="w-12 h-12 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+            </svg>
+          </div>
+          <div>
+            <h2 class="text-xl font-bold text-gray-800">AI Educator</h2>
+            <div class="flex items-center space-x-2">
+              <div class="w-2 h-2 bg-green-400 rounded-full"></div>
+              <span class="text-sm text-gray-600">Online</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-sm text-gray-600 mt-3">
+          Ask me about stress management, mental health, study tips, and coping strategies.
+        </p>
+      </div>
+
+      <!-- Quick Topics -->
+      <div class="p-4 border-b border-gray-200">
+        <h3 class="font-semibold text-gray-800 mb-3">Quick Topics</h3>
+        <div class="space-y-2">
+          <button onclick="askQuestion('What is stress and how does it affect students?')" class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+            💭 Understanding Stress
+          </button>
+          <button onclick="askQuestion('What are some effective breathing exercises for anxiety?')" class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+            🫁 Breathing Techniques
+          </button>
+          <button onclick="askQuestion('How can I manage study stress and improve focus?')" class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+            📚 Study Stress
+          </button>
+          <button onclick="askQuestion('What are healthy sleep habits for better mental health?')" class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+            😴 Sleep & Wellness
+          </button>
+          <button onclick="askQuestion('How can I build better relationships and social support?')" class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+            🤝 Social Support
+          </button>
+          <button onclick="askQuestion('What are signs that I might need professional help?')" class="w-full text-left px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-colors">
+            🩺 Professional Help
+          </button>
+        </div>
+      </div>
+
+      <!-- Disclaimer -->
+      <div class="p-4 bg-yellow-50 border-t border-yellow-200">
+        <div class="flex items-start space-x-2">
+          <svg class="w-5 h-5 text-yellow-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.888-.833-2.598 0L3.196 16.5c-.77.833-.192 2.5 1.344 2.5z"></path>
+          </svg>
+          <div>
+            <h4 class="font-semibold text-yellow-800 text-sm">Important</h4>
+            <p class="text-xs text-yellow-700 mt-1">
+              This AI provides educational information only and is not a substitute for professional mental health care.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Main Area -->
+    <div class="flex-1 flex flex-col">
+      <!-- Messages Container -->
+      <div id="messages-container" class="flex-1 p-6 overflow-y-auto">
+        <div id="messages" class="space-y-6">
+          <!-- Welcome Message -->
+          <div class="flex justify-start">
+            <div class="message-bubble bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-lg px-6 py-4">
+              <div class="flex items-center space-x-3 mb-2">
+                <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                  </svg>
+                </div>
+                <span class="font-semibold">AI Educator</span>
+              </div>
+              <div class="text-sm leading-relaxed">
+                Hello <%= user.name %>! 👋 I'm here to help you learn about stress management and mental wellness. Feel free to ask me anything about:
+                <br><br>
+                • Understanding stress and anxiety<br>
+                • Coping strategies and techniques<br>
+                • Study and academic support<br>
+                • Sleep and lifestyle tips<br>
+                • Building resilience and self-care
+                <br><br>
+                What would you like to explore today?
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Message Input -->
+      <div class="border-t border-gray-200 p-6 bg-white">
+        <form id="ai-message-form" class="flex space-x-4">
+          <div class="flex-1 relative">
+            <input
+              type="text"
+              id="ai-message-input"
+              placeholder="Ask me about stress, anxiety, study tips, or mental wellness..."
+              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-20"
+              maxlength="500"
+              required
+            >
+            <div class="absolute right-3 top-3 text-xs text-gray-400">
+              <span id="ai-char-count">0</span>/500
+            </div>
+          </div>
+          <button
+            type="submit"
+            id="send-button"
+            class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Ask AI
+          </button>
+        </form>
+        
+        <!-- Example Questions -->
+        <div class="flex flex-wrap gap-2 mt-4">
+          <span class="text-sm text-gray-500">Try asking:</span>
+          <button onclick="askQuestion('How can I manage test anxiety?')" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full hover:bg-gray-200 transition-colors">
+            "How can I manage test anxiety?"
+          </button>
+          <button onclick="askQuestion('What are some quick stress relief techniques?')" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full hover:bg-gray-200 transition-colors">
+            "Quick stress relief techniques?"
+          </button>
+          <button onclick="askQuestion('How do I know if I need help?')" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full hover:bg-gray-200 transition-colors">
+            "How do I know if I need help?"
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const messagesContainer = document.getElementById('messages');
+    const messageForm = document.getElementById('ai-message-form');
+    const messageInput = document.getElementById('ai-message-input');
+    const sendButton = document.getElementById('send-button');
+    const charCount = document.getElementById('ai-char-count');
+
+    // Character count
+    messageInput.addEventListener('input', () => {
+      charCount.textContent = messageInput.value.length;
+    });
+
+    // Handle form submission
+    messageForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      
+      if (message) {
+        await sendMessage(message);
+        messageInput.value = '';
+        charCount.textContent = '0';
+      }
+    });
+
+    // Send message function
+    async function sendMessage(message) {
+      // Display user message
+      displayUserMessage(message);
+      
+      // Show loading
+      showTypingIndicator();
+      
+      // Disable input
+      messageInput.disabled = true;
+      sendButton.disabled = true;
+      sendButton.textContent = 'Thinking...';
+
+      try {
+        const response = await fetch('/ai/educate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ message })
+        });
+
+        const data = await response.json();
+        
+        // Hide loading
+        hideTypingIndicator();
+        
+        if (data.response) {
+          displayAIMessage(data.response);
+        } else {
+          displayAIMessage('I apologize, but I\'m having trouble processing your request right now. Please try again or reach out to our support team if the issue persists.');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        hideTypingIndicator();
+        displayAIMessage('I\'m sorry, I\'m experiencing technical difficulties. Please try again in a moment.');
+      } finally {
+        // Re-enable input
+        messageInput.disabled = false;
+        sendButton.disabled = false;
+        sendButton.textContent = 'Ask AI';
+        messageInput.focus();
+      }
+    }
+
+    // Display user message
+    function displayUserMessage(message) {
+      const messageDiv = document.createElement('div');
+      const time = new Date().toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+
+      messageDiv.className = 'flex justify-end mb-6';
+      messageDiv.innerHTML = `
+        <div class="message-bubble bg-green-500 text-white rounded-lg px-6 py-4">
+          <div class="flex items-center space-x-3 mb-2">
+            <span class="font-semibold"><%= user.name %></span>
+          </div>
+          <div class="text-sm leading-relaxed">${escapeHtml(message)}</div>
+          <div class="text-xs text-green-100 mt-2">${time}</div>
+        </div>
+      `;
+      
+      messagesContainer.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    // Display AI message
+    function displayAIMessage(message) {
+      const messageDiv = document.createElement('div');
+      const time = new Date().toLocaleTimeString('en-US', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+      });
+
+      messageDiv.className = 'flex justify-start mb-6';
+      messageDiv.innerHTML = `
+        <div class="message-bubble bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-lg px-6 py-4">
+          <div class="flex items-center space-x-3 mb-2">
+            <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <span class="font-semibold">AI Educator</span>
+          </div>
+          <div class="text-sm leading-relaxed">${escapeHtml(message).replace(/\n/g, '<br>')}</div>
+          <div class="text-xs text-blue-100 mt-2">${time}</div>
+        </div>
+      `;
+      
+      messagesContainer.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+      const typingDiv = document.createElement('div');
+      typingDiv.id = 'typing-indicator';
+      typingDiv.className = 'flex justify-start mb-6';
+      typingDiv.innerHTML = `
+        <div class="message-bubble bg-gray-200 rounded-lg px-6 py-4">
+          <div class="flex items-center space-x-3 mb-2">
+            <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
+              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+            </div>
+            <span class="font-semibold text-gray-600">AI Educator</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <div class="w-2 h-2 bg-gray-500 rounded-full typing-animation"></div>
+            <div class="w-2 h-2 bg-gray-500 rounded-full typing-animation" style="animation-delay: 0.3s;"></div>
+            <div class="w-2 h-2 bg-gray-500 rounded-full typing-animation" style="animation-delay: 0.6s;"></div>
+            <span class="text-sm text-gray-600 ml-2">Thinking...</span>
+          </div>
+        </div>
+      `;
+      
+      messagesContainer.appendChild(typingDiv);
+      scrollToBottom();
+    }
+
+    // Hide typing indicator
+    function hideTypingIndicator() {
+      const typingIndicator = document.getElementById('typing-indicator');
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    // Quick question function
+    function askQuestion(question) {
+      messageInput.value = question;
+      messageInput.focus();
+    }
+
+    // Scroll to bottom
+    function scrollToBottom() {
+      const container = document.getElementById('messages-container');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // Auto-focus input
+    messageInput.focus();
+  </script>
+</body>
+</html>
