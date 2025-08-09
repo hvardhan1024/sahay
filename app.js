@@ -19,27 +19,36 @@ const server = http.createServer(app);
 const io = socketIo(server);
 
 
-const PORT = process.env.PORT || 4000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/sahay'; // Use local if env not set
+const PORT = 4000;
 
-// Connect to MongoDB
+// 🔹 Hardcoded MongoDB Atlas URI (replace username, password, db name)
+const MONGODB_URI = 'mongodb+srv://tempuser:TempPassword123@cluster0.yel9ffh.mongodb.net/sahay?retryWrites=true&w=majority&appName=Cluster0';
+
+// 1️⃣ Connect to MongoDB
 mongoose.connect(MONGODB_URI)
   .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+  .catch(err => {
+    console.error('❌ MongoDB connection error:', err);
+    process.exit(1);
+  });
+
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Session configuration
+// 3️⃣ Session configuration (using same URI from .env)
 app.use(session({
-  secret: 'sahay-secret-key-2024',
+  secret: process.env.SESSION_SECRET || 'fallback-secret',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ mongoUrl: MONGODB_URI }),
+  store: MongoStore.create({
+    mongoUrl: MONGODB_URI,
+    collectionName: 'sessions'
+  }),
   cookie: {
-    secure: false,
+    secure: false, // set true if https
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
